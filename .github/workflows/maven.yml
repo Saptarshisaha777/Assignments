@@ -30,7 +30,7 @@ jobs:
           cache: maven
 
       - name: Start PostgreSQL with Docker Compose
-        run: docker-compose up -d
+        run: docker compose up -d
 
       - name: Wait for Postgres to be ready
         run: |
