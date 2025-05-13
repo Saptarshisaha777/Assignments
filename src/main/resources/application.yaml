@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: DocIngest
+
+  docker:
+    compose:
+      file: /Users/saptarshisaha/My_Files/Learning_GIT/Spring/Assignments/DocIngest/compose.yaml
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    generate-ddl: true
+    show-sql: true
+
+jwt:
+  secret: CZ97CCgnrdy+W0IxifxFIk3brnV8qmuuHK0GNboqlxE=  # 32+ characters
+  expirationMs: 36000
