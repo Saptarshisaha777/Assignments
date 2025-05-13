@@ -15,10 +15,8 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install Docker Compose Plugin
-        run: |
-          sudo apt-get update
-          sudo apt-get install docker-compose-plugin
+      - name: Set up Docker Buildx (includes Compose)
+        uses: docker/setup-buildx-action@v3
 
       - name: Build Spring Boot App (uses docker compose)
         run: ./mvnw clean install
