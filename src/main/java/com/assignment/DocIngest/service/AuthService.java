@@ -20,12 +20,13 @@ public class AuthService {
     @Autowired private PasswordEncoder encoder;
     @Autowired private JwtTokenProvider tokenProvider;
 
-    public void register(RegisterRequest req) {
+    public String register(RegisterRequest req) {
         User user = new User();
         user.setUsername(req.getUsername());
         user.setPassword(encoder.encode(req.getPassword()));
         user.setRole(req.getRole());
         userRepo.save(user);
+        return "User registered";
     }
 
     public AuthResponse login(AuthRequest req) {
