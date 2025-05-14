@@ -2,6 +2,12 @@ spring:
   application:
     name: DocIngest
 
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+
   docker:
     compose:
       file: /Users/saptarshisaha/My_Files/Learning_GIT/Spring/Assignments/DocIngest/compose.yaml
