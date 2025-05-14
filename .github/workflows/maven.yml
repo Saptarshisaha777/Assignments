@@ -11,7 +11,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:14
+        image: postgres:latest
         env:
           POSTGRES_DB: mydatabase
           POSTGRES_USER: myuser
@@ -48,4 +48,4 @@ jobs:
           echo "SPRING_DATASOURCE_PASSWORD=secret" >> $GITHUB_ENV
 
       - name: Run tests
-        run: ./mvnw test
+        run: mvn clean install
