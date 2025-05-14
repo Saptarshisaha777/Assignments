@@ -1,22 +1,38 @@
-name: CI Build
+name: CI/CD for Spring Boot with Docker Compose
 
-on: [push]
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  build:
+  build-test:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Set up Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
-          java-version: '17'
           distribution: 'temurin'
+          java-version: '17' # or your version
 
-      - name: Set up Docker Buildx (includes Compose)
+      - name: Set up Docker Compose (via Docker CLI plugin)
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Spring Boot App (uses docker compose)
-        run: mvn clean install
+      - name: Run docker-compose
+        run: docker compose up -d
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          echo "Waiting for Postgres..."
+          for i in {1..20}; do
+            docker exec $(docker ps -qf "ancestor=postgres") pg_isready -U myuser && break
+            sleep 3
+          done
+
+      - name: Run tests
+        run: mvn clean install  # or ./gradlew test
