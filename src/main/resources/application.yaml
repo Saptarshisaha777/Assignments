@@ -20,4 +20,4 @@ spring:
 
 jwt:
   secret: CZ97CCgnrdy+W0IxifxFIk3brnV8qmuuHK0GNboqlxE=  # 32+ characters
-  expirationMs: 36000
+  expirationMs: 36500
