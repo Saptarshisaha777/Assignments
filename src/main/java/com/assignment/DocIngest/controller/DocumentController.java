@@ -14,6 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +42,12 @@ public class DocumentController {
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
             // Get the authenticated username from the security context
-            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            String username = authentication.getName(); // This should not be null if the test is set up correctly
 
             // Find the user from the database
             User user = userRepository.findByUsername(username)

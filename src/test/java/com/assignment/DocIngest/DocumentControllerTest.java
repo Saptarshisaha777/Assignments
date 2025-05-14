@@ -4,6 +4,7 @@ import com.assignment.DocIngest.controller.DocumentController;
 import com.assignment.DocIngest.dto.DocumentMeta;
 import com.assignment.DocIngest.dto.DocumentUpdateRequest;
 import com.assignment.DocIngest.entity.Document;
+import com.assignment.DocIngest.entity.Role;
 import com.assignment.DocIngest.service.DocumentService;
 import com.assignment.DocIngest.entity.User;
 import com.assignment.DocIngest.repository.UserRepository;
@@ -20,12 +21,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -52,17 +57,39 @@ class DocumentControllerTest {
     void setUp() {
         user = new User();
         user.setUsername("testUser");
+        user.setRole(Role.ADMIN);
+        user.setId(1L);
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(username = "testUser", roles = "ADMIN")
     void uploadFile() throws TikaException, IOException {
-        when(userRepository.findByUsername(any())).thenReturn(java.util.Optional.of(user));
-        when(documentService.store(any(), any())).thenReturn(new Document()); // Assuming Document is your entity
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken("testUser", null, List.of())
+        );
+
+
+        final Document document = new Document();
+        document.setId(1L);
+        document.setFilename("testfile.txt");
+        document.setFiletype("text/plain");
+        document.setContent("test content");
+        document.setUploadDate(LocalDate.now());
+
+        final MultipartFile file = mock(MultipartFile.class);
+       // when(file.getOriginalFilename()).thenReturn("testfile.txt");
+       // when(file.getInputStream()).thenReturn(new ByteArrayInputStream("test content".getBytes()));
+
+        // Ensure the user is found
+        when(userRepository.findByUsername("testUser")).thenReturn(Optional.ofNullable(user));
+        // Ensure the document service is set up to return the document
+        when(documentService.store(any(), any())).thenReturn(document);
 
         ResponseEntity<?> response = documentController.uploadFile(file);
 
+        // Check for OK response
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        // Verify that the store method was called once
         verify(documentService, times(1)).store(file, user);
     }
 
