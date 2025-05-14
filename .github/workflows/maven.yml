@@ -49,3 +49,19 @@ jobs:
 
       - name: Run tests
         run: mvn clean install
+
+      - name: Build Docker Image
+        run: docker build -t doc-ingest-app .
+
+      # Optional: Push Docker image to Docker Hub
+      # Uncomment and replace YOUR_DOCKERHUB_USERNAME and IMAGE_NAME
+
+      - name: Build & push Docker image
+        uses: mr-smithers-excellent/docker-build-push@v5
+        with:
+          image: saptarshisaha777/doc-ingest-new
+          tags: latest
+          registry: docker.io
+          dockerfile: Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
